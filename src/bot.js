@@ -1,9 +1,10 @@
 import dotenv from 'dotenv';
-import { Telegraf } from 'telegraf';
+import { Telegraf, Markup } from 'telegraf';
 
 dotenv.config();
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
+const WEBAPP_URL = process.env.WEBAPP_URL;
 
 if (!BOT_TOKEN) {
   throw new Error('BOT_TOKEN .env faylida topilmadi (v2)');
@@ -11,8 +12,17 @@ if (!BOT_TOKEN) {
 
 const bot = new Telegraf(BOT_TOKEN);
 
-// Oddiy start
-bot.start((ctx) => ctx.reply('v2 bot ishga tushdi!'));
+// Oddiy start: WebApp tugmasi bilan
+bot.start((ctx) => {
+  if (!WEBAPP_URL) {
+    return ctx.reply('v2 bot ishga tushdi! WEBAPP_URL .env faylida topilmadi.');
+  }
+
+  return ctx.reply(
+    'v2 bot ishga tushdi! WebAppni shu tugma orqali oching.',
+    Markup.keyboard([[Markup.button.webApp('🧩 WebApp v2', WEBAPP_URL)]]).resize()
+  );
+});
 
 // Test: matn yuborilganda qaytarib beradi
 bot.on('text', (ctx) => {
